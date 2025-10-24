@@ -19,32 +19,63 @@ def get_driver():
     chrome_options.add_argument("--disable-gpu")
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-
 @app.get("/scrape/startradingagency")
 def scrape_star_trading():
     driver = get_driver()
     driver.get("https://www.startradingagency.com/")
 
-    time.sleep(5)  #wait for JS to load images
+    time.sleep(5)  # wait for JS to load images
 
-    selectors = [
-        ".prdRngImg.dflx.bdr1.mb15.brds5",
-        ".hPi.dflx.bd.pa.zi2",
-    ]
+    # prdRngPrdWrap elements stored in a list of dicts
+    products = []
+    product_wraps = driver.find_elements(By.CSS_SELECTOR, ".prdRngPrdWrap.p10.pb35.mb40.pr.brds5")
+    for wrap in product_wraps:
+        product_data = {"image": [], "title": "", "bullets": []}
 
-    image_urls = set()
-    for selector in selectors:
-        elements = driver.find_elements(By.CSS_SELECTOR, selector)
-        for el in elements:
-            imgs = el.find_elements(By.TAG_NAME, "img")
-            for img in imgs:
-                src = img.get_attribute("src")
-                if src:
-                    image_urls.add(src)
+        # Images
+        imgs = wrap.find_elements(By.TAG_NAME, "img")
+        for img in imgs:
+            src = img.get_attribute("src")
+            if src:
+                product_data["image"].append(src)
+
+        # Title
+        try:
+            title_el = wrap.find_element(By.CSS_SELECTOR, ".fwb.fs20.clr2.lh6.pl20.pr20.mb15.ls1.prdRngHdng h3 a")
+            product_data["title"] = title_el.text.strip()
+        except:
+            pass
+
+        # Bullets
+        try:
+            bullets = wrap.find_elements(By.CSS_SELECTOR, "ul.ls1.pb10 li a")
+            for b in bullets:
+                text = b.text.strip()
+                if text:
+                    product_data["bullets"].append(text)
+        except:
+            pass
+
+        products.append(product_data)
+
+    # .hPi.dflx.bd.pa.zi2 images stored in a set 
+    special_images = set()
+    special_elements = driver.find_elements(By.CSS_SELECTOR, ".hPi.dflx.bd.pa.zi2")
+    for el in special_elements:
+        imgs = el.find_elements(By.TAG_NAME, "img")
+        for img in imgs:
+            src = img.get_attribute("src")
+            if src:
+                special_images.add(src)
 
     driver.quit()
-    return {"source": "StarTradingAgency", "count": len(image_urls), "images": list(image_urls)}
-
+    return {
+        "source": "StarTradingAgency",
+        "detailed_count": len(products),
+        "detailed_data": products,
+        "images_only_count": len(special_images),
+        "only_images": list(special_images)
+    }
 
 @app.get("/scrape/tradeindia")
 def scrape_trade_india():
