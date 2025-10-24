@@ -1,3 +1,4 @@
-fastapi==0.120.0
-selenium==4.37.0
-webdriver_manager==4.0.2
+fastapi
+uvicorn
+selenium
+webdriver-manager
