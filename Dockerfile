@@ -1,15 +1,30 @@
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y \
-    wget unzip curl gnupg \
-    && wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update && apt-get install -y \
-       google-chrome-stable \
-       chromium-driver \
-       fonts-liberation libnss3 libatk-bridge2.0-0 libx11-xcb1 libxcb1 libxcomposite1 \
-       libxcursor1 libxdamage1 libxi6 libxtst6 libxrandr2 xdg-utils \
+    wget \
+    unzip \
+    curl \
+    gnupg \
+    ca-certificates \
+    fonts-liberation \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libx11-xcb1 \
+    libxcb1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxdamage1 \
+    libxi6 \
+    libxtst6 \
+    libxrandr2 \
+    xdg-utils \
+    --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
+
+RUN wget -q -O /tmp/google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get update \
+    && apt-get install -y /tmp/google-chrome.deb \
+    && rm /tmp/google-chrome.deb
 
 WORKDIR /app
 
