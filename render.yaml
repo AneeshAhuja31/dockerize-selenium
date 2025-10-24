@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: fastapi-selenium-app
+    env: docker
+    plan: free
+    autoDeploy: true
+    region: singapore  
