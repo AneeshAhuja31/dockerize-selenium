@@ -87,7 +87,7 @@ def scrape_trade_india():
 
     #Product Cards
     try:
-        wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "...")))
+        wait.until(EC.presence_of_all_elements_located((By.CSS_SELECTOR, "div.col-md-4.col-lg-4.col-xl-2.col-6.mb-4.custom-width")))
     except TimeoutException:
         driver.quit()
         return {"error": "Could not load page, maybe blocked by site"}
