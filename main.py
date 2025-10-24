@@ -82,7 +82,7 @@ def scrape_trade_india():
     driver = get_driver()
     driver.get("https://www.tradeindia.com/")
 
-    wait = WebDriverWait(driver, 15)
+    wait = WebDriverWait(driver, 60)
 
     #Product Cards
     wait.until(EC.presence_of_all_elements_located(
